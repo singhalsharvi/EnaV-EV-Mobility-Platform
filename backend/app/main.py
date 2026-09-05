@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
@@ -19,9 +20,19 @@ except Exception as db_err:
 
 app = FastAPI(title="EnaV Backend", version="1.0.0")
 
+cors_origins_env = os.getenv("CORS_ORIGINS", "")
+allowed_origins = [
+    origin.strip()
+    for origin in cors_origins_env.split(",")
+    if origin.strip()
+]
+if "http://localhost:3000" not in allowed_origins:
+    allowed_origins.append("http://localhost:3000")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app|https://.*\.render\.com",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

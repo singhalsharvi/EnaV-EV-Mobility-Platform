@@ -290,108 +290,110 @@ export default function HomePage() {
           NAVBAR
       ===================================================== */}
 
-      <div className="sticky top-3 z-50 mx-auto max-w-7xl px-4">
+      {/* =====================================================
+          NAVBAR / HEADER
+      ===================================================== */}
 
-        <nav className="rounded-full border border-emerald-400/25 bg-[#0B132B]/95 px-5 py-3.5 shadow-2xl shadow-black/60 backdrop-blur-xl sm:px-8">
+      <header className="sticky top-0 z-50 w-full border-b border-slate-800/80 bg-[#070B14]/90 backdrop-blur-xl transition-all">
 
-          <div className="flex h-12 items-center justify-between">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 sm:px-8 lg:px-12">
 
-            {/* BRAND */}
+          {/* BRAND */}
+
+          <Link
+            href="/"
+            className="group flex items-center gap-3.5 shrink-0"
+          >
+
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-400 text-slate-950 shadow-[0_0_20px_rgba(16,185,129,.4)] transition group-hover:scale-105 shrink-0">
+              <Zap className="h-5 w-5 fill-current" />
+            </div>
+
+            <div className="flex flex-col justify-center">
+
+              <div className="text-xl sm:text-2xl font-black tracking-tight leading-none text-white">
+                Ena<span className="text-emerald-400">
+                  V
+                </span>
+              </div>
+
+              <div className="hidden text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400 sm:block mt-1">
+                Intelligent Mobility Platform
+              </div>
+
+            </div>
+
+          </Link>
+
+          {/* DESKTOP NAV */}
+
+          <nav className="hidden items-center gap-7 lg:flex xl:gap-9">
+
+            <a
+              href="#platform"
+              className="text-sm font-semibold tracking-wide text-slate-300 transition hover:text-emerald-400"
+            >
+              Platform
+            </a>
+
+            <a
+              href="#charging"
+              className="text-sm font-semibold tracking-wide text-slate-300 transition hover:text-emerald-400"
+            >
+              Charging
+            </a>
+
+            <a
+              href="#schemes"
+              className="text-sm font-semibold tracking-wide text-slate-300 transition hover:text-emerald-400"
+            >
+              Schemes
+            </a>
+
+            <a
+              href="#government"
+              className="text-sm font-semibold tracking-wide text-slate-300 transition hover:text-emerald-400"
+            >
+              Government
+            </a>
+
+            <a
+              href="#drivers"
+              className="text-sm font-semibold tracking-wide text-slate-300 transition hover:text-emerald-400"
+            >
+              Drivers
+            </a>
+
+            <a
+              href="#feedback"
+              className="text-sm font-semibold tracking-wide text-slate-300 transition hover:text-emerald-400"
+            >
+              Feedback
+            </a>
+
+          </nav>
+
+          {/* ACTIONS */}
+
+          <div className="flex items-center gap-4 sm:gap-5 shrink-0">
 
             <Link
-              href="/"
-              className="group flex items-center gap-3"
+              href="/emergency"
+              className="flex items-center gap-2 rounded-full bg-rose-500/15 border border-rose-500/40 px-4 py-2 text-xs font-mono font-bold text-rose-300 transition hover:bg-rose-500/25 shadow-md shadow-rose-950/40 shrink-0"
             >
-
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-400 text-slate-950 shadow-[0_0_20px_rgba(16,185,129,.4)] transition group-hover:scale-105">
-                <Zap className="h-5 w-5 fill-current" />
-              </div>
-
-              <div>
-
-                <div className="text-xl font-black tracking-tight">
-                  Ena<span className="text-emerald-400">
-                    V
-                  </span>
-                </div>
-
-                <div className="hidden text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 sm:block">
-                  Intelligent Mobility Platform
-                </div>
-
-              </div>
-
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
+              <span>112 Emergency</span>
             </Link>
 
-            {/* DESKTOP NAV */}
+            <Link
+              href="/auth/signup"
+              className="hidden sm:inline-flex items-center gap-2 rounded-full bg-emerald-400 px-6 py-2.5 text-xs font-black uppercase tracking-wider text-slate-950 shadow-[0_0_20px_rgba(16,185,129,0.3)] transition hover:bg-emerald-300 shrink-0"
+            >
+              Get started
+              <ArrowRight className="h-4 w-4" />
+            </Link>
 
-            <div className="hidden items-center gap-8 md:flex">
-
-              <a
-                href="#platform"
-                className="text-xs font-bold uppercase tracking-wider text-slate-300 transition hover:text-emerald-400"
-              >
-                Platform
-              </a>
-
-              <a
-                href="#charging"
-                className="text-xs font-bold uppercase tracking-wider text-slate-300 transition hover:text-emerald-400"
-              >
-                Charging
-              </a>
-
-              <a
-                href="#schemes"
-                className="text-xs font-bold uppercase tracking-wider text-slate-300 transition hover:text-emerald-400"
-              >
-                Schemes
-              </a>
-
-              <a
-                href="#government"
-                className="text-xs font-bold uppercase tracking-wider text-slate-300 transition hover:text-emerald-400"
-              >
-                Government
-              </a>
-
-              <a
-                href="#drivers"
-                className="text-xs font-bold uppercase tracking-wider text-slate-300 transition hover:text-emerald-400"
-              >
-                Drivers
-              </a>
-
-              <a
-                href="#feedback"
-                className="text-xs font-bold uppercase tracking-wider text-slate-300 transition hover:text-emerald-400"
-              >
-                Feedback
-              </a>
-
-            </div>
-
-            {/* ACTIONS */}
-
-            <div className="hidden items-center gap-3 sm:flex">
-              <Link
-                href="/emergency"
-                className="flex items-center gap-1.5 rounded-full bg-rose-600/20 border border-rose-500/50 px-3.5 py-2 text-xs font-mono font-bold text-rose-300 transition hover:bg-rose-600/30 shadow-md shadow-rose-950"
-              >
-                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-                112 Emergency
-              </Link>
-
-              <Link
-                href="/auth/signup"
-                className="flex items-center gap-2 rounded-full bg-emerald-400 px-5 py-2.5 text-xs font-black uppercase tracking-wider text-slate-950 shadow-[0_0_20px_rgba(16,185,129,0.3)] transition hover:bg-emerald-300"
-              >
-                Get started
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-
-            {/* MOBILE */}
+            {/* MOBILE MENU TOGGLE */}
 
             <button
               type="button"
@@ -400,7 +402,7 @@ export default function HomePage() {
                   (current) => !current,
                 )
               }
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 text-slate-300 sm:hidden"
+              className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-700 bg-slate-900/60 text-slate-300 transition hover:border-slate-500 hover:text-white lg:hidden shrink-0"
               aria-label={
                 mobileMenuOpen
                   ? "Close menu"
@@ -416,8 +418,14 @@ export default function HomePage() {
 
           </div>
 
-          {mobileMenuOpen && (
-            <div className="border-t border-slate-800 py-4 md:hidden space-y-1">
+        </div>
+
+        {/* MOBILE DROPDOWN */}
+
+        {mobileMenuOpen && (
+          <div className="border-t border-slate-800 bg-[#070B14]/98 px-6 py-6 lg:hidden shadow-2xl backdrop-blur-2xl">
+
+            <div className="flex flex-col space-y-2">
 
               {[
                 ["Platform", "#platform"],
@@ -433,17 +441,20 @@ export default function HomePage() {
                   onClick={() =>
                     setMobileMenuOpen(false)
                   }
-                  className="block rounded-lg px-4 py-3 text-sm font-bold uppercase tracking-wider text-slate-200 transition hover:bg-slate-900 hover:text-emerald-400"
+                  className="block rounded-xl px-4 py-3 text-sm font-bold uppercase tracking-wider text-slate-200 transition hover:bg-slate-900 hover:text-emerald-400"
                 >
                   {label}
                 </a>
               ))}
 
-              <div className="mt-4 border-t border-slate-800 pt-4">
+              <div className="mt-4 border-t border-slate-800 pt-4 space-y-3">
 
                 <Link
                   href="/auth/signup"
-                  className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-emerald-400 text-xs font-black uppercase tracking-wider text-slate-950"
+                  onClick={() =>
+                    setMobileMenuOpen(false)
+                  }
+                  className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-emerald-400 text-xs font-black uppercase tracking-wider text-slate-950 transition hover:bg-emerald-300"
                 >
                   Get started
                   <ArrowRight className="h-4 w-4" />
@@ -452,11 +463,11 @@ export default function HomePage() {
               </div>
 
             </div>
-          )}
 
-        </nav>
+          </div>
+        )}
 
-      </div>
+      </header>
 
       {/* =====================================================
           HERO
@@ -1626,15 +1637,24 @@ export default function HomePage() {
 
           </div>
 
-          <div className="mt-12 flex flex-col gap-3 border-t border-slate-800 pt-6 text-xs uppercase tracking-widest text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-12 flex flex-col gap-4 border-t border-slate-800/80 pt-6 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
 
-            <span>
-              © {new Date().getFullYear()} EnaV
-            </span>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span className="font-semibold uppercase tracking-widest text-slate-300">
+                © {new Date().getFullYear()} EnaV
+              </span>
+              <span className="hidden text-slate-600 sm:inline">•</span>
+              <span className="text-[11px] uppercase tracking-wider text-slate-400">
+                Intelligent Mobility Platform
+              </span>
+            </div>
 
-            <span>
-              Intelligent Mobility Platform
-            </span>
+            <div className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/60 px-3.5 py-1.5 text-[11px] font-medium tracking-wide text-slate-300 shadow-sm">
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+              <span>ISO 27001 Certified</span>
+              <span className="text-slate-600">•</span>
+              <span>DPDP Compliant</span>
+            </div>
 
           </div>
 
