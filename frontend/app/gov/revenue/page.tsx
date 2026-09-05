@@ -5,10 +5,9 @@ import {
   Activity,
   BatteryCharging,
   Car,
-  CircleDollarSign,
   Cloud,
+  Download,
   Fuel,
-  Leaf,
   Percent,
   ShieldCheck,
   TrendingDown,
@@ -27,59 +26,62 @@ type AnalyticsTab =
   | "finance";
 
 /* =========================================================
-   DATA
+   RANDOMIZED DATA GENERATORS
 ========================================================= */
 
-const activityData = [
-  { label: "Jan", value: 42 },
-  { label: "Feb", value: 48 },
-  { label: "Mar", value: 53 },
-  { label: "Apr", value: 61 },
-  { label: "May", value: 68 },
-  { label: "Jun", value: 76 },
-  { label: "Jul", value: 84 },
-  { label: "Aug", value: 91 },
+const getRandomInt = (min: number, max: number) =>
+  Math.floor(Math.random() * (max - min + 1)) + min;
+
+const generateActivityData = () => [
+  { label: "Jan", value: getRandomInt(35, 45) },
+  { label: "Feb", value: getRandomInt(42, 52) },
+  { label: "Mar", value: getRandomInt(48, 58) },
+  { label: "Apr", value: getRandomInt(55, 65) },
+  { label: "May", value: getRandomInt(62, 72) },
+  { label: "Jun", value: getRandomInt(70, 80) },
+  { label: "Jul", value: getRandomInt(78, 88) },
+  { label: "Aug", value: getRandomInt(85, 95) },
 ];
 
-const chargingData = [
-  { label: "Jan", value: 34 },
-  { label: "Feb", value: 39 },
-  { label: "Mar", value: 43 },
-  { label: "Apr", value: 49 },
-  { label: "May", value: 56 },
-  { label: "Jun", value: 61 },
-  { label: "Jul", value: 69 },
-  { label: "Aug", value: 74 },
+const generateChargingData = () => [
+  { label: "Jan", value: getRandomInt(30, 40) },
+  { label: "Feb", value: getRandomInt(35, 45) },
+  { label: "Mar", value: getRandomInt(40, 50) },
+  { label: "Apr", value: getRandomInt(45, 55) },
+  { label: "May", value: getRandomInt(50, 60) },
+  { label: "Jun", value: getRandomInt(58, 68) },
+  { label: "Jul", value: getRandomInt(65, 75) },
+  { label: "Aug", value: getRandomInt(70, 82) },
 ];
 
-const carbonData = [
-  { label: "Jan", value: 168 },
-  { label: "Feb", value: 194 },
-  { label: "Mar", value: 218 },
-  { label: "Apr", value: 247 },
-  { label: "May", value: 281 },
-  { label: "Jun", value: 319 },
-  { label: "Jul", value: 351 },
-  { label: "Aug", value: 386 },
+const generateCarbonData = () => [
+  { label: "Jan", value: getRandomInt(150, 180) },
+  { label: "Feb", value: getRandomInt(180, 210) },
+  { label: "Mar", value: getRandomInt(210, 235) },
+  { label: "Apr", value: getRandomInt(240, 265) },
+  { label: "May", value: getRandomInt(270, 300) },
+  { label: "Jun", value: getRandomInt(305, 335) },
+  { label: "Jul", value: getRandomInt(340, 370) },
+  { label: "Aug", value: getRandomInt(375, 400) },
 ];
 
-const financeData = [
-  { label: "Jan", revenue: 18, spending: 12 },
-  { label: "Feb", revenue: 21, spending: 14 },
-  { label: "Mar", revenue: 24, spending: 15 },
-  { label: "Apr", revenue: 28, spending: 17 },
-  { label: "May", revenue: 31, spending: 19 },
-  { label: "Jun", revenue: 35, spending: 21 },
-  { label: "Jul", revenue: 39, spending: 23 },
-  { label: "Aug", revenue: 44, spending: 24 },
+const generateFinanceData = () => [
+  { label: "Jan", revenue: getRandomInt(15, 20), spending: getRandomInt(10, 14) },
+  { label: "Feb", revenue: getRandomInt(18, 23), spending: getRandomInt(12, 16) },
+  { label: "Mar", revenue: getRandomInt(22, 26), spending: getRandomInt(13, 18) },
+  { label: "Apr", revenue: getRandomInt(25, 30), spending: getRandomInt(15, 20) },
+  { label: "May", revenue: getRandomInt(28, 33), spending: getRandomInt(17, 22) },
+  { label: "Jun", revenue: getRandomInt(32, 38), spending: getRandomInt(19, 24) },
+  { label: "Jul", revenue: getRandomInt(36, 42), spending: getRandomInt(21, 26) },
+  { label: "Aug", revenue: getRandomInt(40, 48), spending: getRandomInt(22, 28) },
 ];
 
-const zoneCarbonData = [
-  { zone: "Dwarka", value: 92 },
-  { zone: "Janakpuri", value: 78 },
-  { zone: "Rohini", value: 65 },
-  { zone: "CP Central", value: 58 },
-  { zone: "Okhla", value: 51 },
+const generateZoneCarbonData = () => [
+  { zone: "Dwarka", value: getRandomInt(85, 100) },
+  { zone: "Janakpuri", value: getRandomInt(70, 85) },
+  { zone: "Rohini", value: getRandomInt(60, 75) },
+  { zone: "CP Central", value: getRandomInt(50, 65) },
+  { zone: "Okhla", value: getRandomInt(45, 60) },
 ];
 
 /* =========================================================
@@ -113,13 +115,13 @@ function MetricCard({
         </div>
       </div>
 
-      <div className="mt-4 flex items-end gap-1">
+      <div className="mt-4 flex items-end gap-1.5">
         <span className="text-2xl font-black tracking-tight text-slate-900">
           {value}
         </span>
 
         {unit && (
-          <span className="mb-1 text-[10px] font-medium text-slate-700">
+          <span className="mb-0.5 text-2xl font-black tracking-tight text-slate-900">
             {unit}
           </span>
         )}
@@ -127,8 +129,9 @@ function MetricCard({
 
       {trend && trendLabel && (
         <div
-          className={`mt-3 flex items-center gap-1.5 text-[9px] font-bold ${trend === "up" ? "text-emerald-700" : "text-emerald-800"
-            }`}
+          className={`mt-3 flex items-center gap-1.5 text-[9px] font-bold ${
+            trend === "up" ? "text-emerald-700" : "text-emerald-800"
+          }`}
         >
           {trend === "up" ? (
             <TrendingUp className="h-3 w-3" />
@@ -194,13 +197,13 @@ function LineChart({
     const x =
       paddingX +
       (index / Math.max(data.length - 1, 1)) *
-      (width - paddingX * 2);
+        (width - paddingX * 2);
 
     const y =
       height -
       paddingY -
       ((item.value - min) / range) *
-      (height - paddingY * 2);
+        (height - paddingY * 2);
 
     return {
       ...item,
@@ -308,6 +311,7 @@ function LineChart({
 ========================================================= */
 
 function ZoneBars() {
+  const zoneCarbonData = useMemo(() => generateZoneCarbonData(), []);
   const max = Math.max(...zoneCarbonData.map((item) => item.value));
 
   return (
@@ -331,7 +335,7 @@ function ZoneBars() {
               </span>
 
               <span className="text-[9px] font-bold text-slate-700">
-                {item.value} t
+                {item.value} Tons
               </span>
             </div>
 
@@ -359,8 +363,7 @@ function FinanceChart() {
   const [fromMonth, setFromMonth] = useState("Jan");
   const [toMonth, setToMonth] = useState("Aug");
 
-  // Years for which actual finance data is currently available.
-  // Add future years here when actual year-wise data is available.
+  const financeData = useMemo(() => generateFinanceData(), []);
   const availableYears = ["2026"];
 
   const monthOrder = financeData.map((item) => item.label);
@@ -497,7 +500,7 @@ function FinanceChart() {
                 </span>
 
                 <span className="text-[9px] font-black text-emerald-700">
-                  ₹{item.revenue}L
+                  ₹{item.revenue} Lakh
                 </span>
               </div>
 
@@ -519,7 +522,7 @@ function FinanceChart() {
                 </span>
 
                 <span className="text-[9px] font-black text-blue-700">
-                  ₹{item.spending}L
+                  ₹{item.spending} Lakh
                 </span>
               </div>
 
@@ -538,6 +541,7 @@ function FinanceChart() {
     </div>
   );
 }
+
 /* =========================================================
    TAB NAV
 ========================================================= */
@@ -553,22 +557,10 @@ function TabNav({
     id: AnalyticsTab;
     label: string;
   }[] = [
-      {
-        id: "overview",
-        label: "Overview",
-      },
-      {
-        id: "charging",
-        label: "Charging",
-      },
-      {
-        id: "sustainability",
-        label: "Sustainability",
-      },
-      {
-        id: "finance",
-        label: "Finance",
-      },
+      { id: "overview", label: "Overview" },
+      { id: "charging", label: "Charging" },
+      { id: "sustainability", label: "Sustainability" },
+      { id: "finance", label: "Finance" },
     ];
 
   return (
@@ -581,10 +573,11 @@ function TabNav({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`relative rounded-t-lg px-5 py-4 text-[9px] font-black uppercase tracking-wider transition ${active
-                ? "border-t border-x border-emerald-700 bg-emerald-800 text-white"
-                : "text-slate-700 hover:text-slate-900"
-                }`}
+              className={`relative rounded-t-lg px-5 py-4 text-[9px] font-black uppercase tracking-wider transition ${
+                active
+                  ? "border-t border-x border-emerald-700 bg-emerald-800 text-white"
+                  : "text-slate-700 hover:text-slate-900"
+              }`}
             >
               {tab.label}
             </button>
@@ -600,6 +593,17 @@ function TabNav({
 ========================================================= */
 
 function Overview() {
+  const activityData = useMemo(() => generateActivityData(), []);
+
+  // Randomized integer states for Network Outcomes cards
+  const evSessionsValue = useMemo(() => getRandomInt(1, 9), []);
+  const evSessionsDecimal = useMemo(() => getRandomInt(10, 99), []);
+  const energyDeliveredValue = useMemo(() => getRandomInt(1, 9), []);
+  const energyDeliveredDecimal = useMemo(() => getRandomInt(10, 99), []);
+  const co2AvoidedValue = useMemo(() => getRandomInt(1000, 5000), []);
+  const govRevenueValue = useMemo(() => getRandomInt(1, 9), []);
+  const govRevenueDecimal = useMemo(() => getRandomInt(10, 99), []);
+
   return (
     <div className="space-y-7">
       <SectionTitle
@@ -611,38 +615,37 @@ function Overview() {
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           label="EV Sessions"
-          value="184.6K"
+          value={`${evSessionsValue}.${evSessionsDecimal}`}
+          unit="Lakh"
           icon={<Car className="h-4 w-4 text-emerald-700" />}
         />
 
         <MetricCard
           label="Energy Delivered"
-          value="1.84"
+          value={`${energyDeliveredValue}.${energyDeliveredDecimal}`}
           unit="GWh"
           icon={<Zap className="h-4 w-4 text-emerald-700" />}
         />
 
         <MetricCard
           label="CO₂ Avoided"
-          value="2,460"
-          unit="t"
+          value={co2AvoidedValue.toLocaleString()}
+          unit="Tons"
           icon={<Cloud className="h-4 w-4 text-emerald-700" />}
         />
 
         <MetricCard
           label="Government Revenue"
-          value="₹2.84"
+          value={`₹${govRevenueValue}.${govRevenueDecimal}`}
           unit="Cr"
-          icon={
-            <Activity className="h-4 w-4 text-emerald-700" />
-          }
+          icon={<Activity className="h-4 w-4 text-emerald-700" />}
         />
       </div>
 
       <section>
         <SectionTitle
           eyebrow="Network trend"
-          title="EV Network Activity"
+          title="Monthly Activity Trend"
           description="Monthly growth in overall EV activity across the program."
         />
 
@@ -657,6 +660,14 @@ function Overview() {
 ========================================================= */
 
 function Charging() {
+  const chargingData = useMemo(() => generateChargingData(), []);
+
+  // Randomized integer states for Charging cards
+  const chargingSessionsValue = useMemo(() => getRandomInt(1, 9), []);
+  const chargingSessionsDecimal = useMemo(() => getRandomInt(10, 99), []);
+  const energyDeliveredValue = useMemo(() => getRandomInt(1, 9), []);
+  const energyDeliveredDecimal = useMemo(() => getRandomInt(10, 99), []);
+
   return (
     <div className="space-y-7">
       <SectionTitle
@@ -668,22 +679,21 @@ function Charging() {
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           label="Charging Sessions"
-          value="184.6K"
-          icon={
-            <BatteryCharging className="h-4 w-4 text-emerald-700" />
-          }
+          value={`${chargingSessionsValue}.${chargingSessionsDecimal}`}
+          unit="Lakh"
+          icon={<BatteryCharging className="h-4 w-4 text-emerald-700" />}
         />
 
         <MetricCard
           label="Energy Delivered"
-          value="1.84"
+          value={`${energyDeliveredValue}.${energyDeliveredDecimal}`}
           unit="GWh"
           icon={<Zap className="h-4 w-4 text-emerald-700" />}
         />
 
         <MetricCard
           label="Avg Session"
-          value="34"
+          value={getRandomInt(20, 60).toString()}
           unit="min"
           icon={<Activity className="h-4 w-4 text-emerald-700" />}
         />
@@ -703,16 +713,13 @@ function Charging() {
           description="Monthly charging activity measured by network-wide energy demand."
         />
 
-        <LineChart
-          data={chargingData}
-          suffix=" GWh"
-        />
+        <LineChart data={chargingData} suffix=" GWh" />
       </section>
 
       <div className="grid gap-3 lg:grid-cols-3">
         <InsightBlock
           title="Demand growth"
-          value="+12.7%"
+          value={`+${getRandomInt(5, 25)}.%`}
           description="Energy delivered has increased consistently over the measured period."
           icon={<TrendingUp className="h-4 w-4 text-emerald-700" />}
         />
@@ -726,11 +733,9 @@ function Charging() {
 
         <InsightBlock
           title="Session duration"
-          value="34 min"
+          value={`${getRandomInt(20, 50)} min`}
           description="Average charging session duration across the network."
-          icon={
-            <BatteryCharging className="h-4 w-4 text-emerald-700" />
-          }
+          icon={<BatteryCharging className="h-4 w-4 text-emerald-700" />}
         />
       </div>
     </div>
@@ -742,6 +747,13 @@ function Charging() {
 ========================================================= */
 
 function Sustainability() {
+  const carbonData = useMemo(() => generateCarbonData(), []);
+
+  // Randomized integer states for Sustainability cards
+  const evKmValue = useMemo(() => getRandomInt(100, 300), []);
+  const co2AvoidedValue = useMemo(() => getRandomInt(1000, 5000), []);
+  const fuelDisplacedValue = useMemo(() => getRandomInt(50, 200), []);
+
   return (
     <div className="space-y-7">
       <SectionTitle
@@ -753,22 +765,22 @@ function Sustainability() {
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <MetricCard
           label="EV Kilometres"
-          value="18.6M"
-          unit="km"
+          value={evKmValue.toString()}
+          unit="Lakh km"
           icon={<Car className="h-4 w-4 text-emerald-700" />}
         />
 
         <MetricCard
           label="CO₂ Avoided"
-          value="2,460"
-          unit="t"
+          value={co2AvoidedValue.toLocaleString()}
+          unit="Tons"
           icon={<Cloud className="h-4 w-4 text-emerald-700" />}
         />
 
         <MetricCard
           label="Fuel Displaced"
-          value="1.12"
-          unit="ML"
+          value={fuelDisplacedValue.toString()}
+          unit="Lakh L"
           icon={<Fuel className="h-4 w-4 text-emerald-700" />}
         />
       </div>
@@ -780,10 +792,7 @@ function Sustainability() {
           description="Estimated cumulative emissions avoided through EV usage."
         />
 
-        <LineChart
-          data={carbonData}
-          suffix=" t"
-        />
+        <LineChart data={carbonData} suffix=" Tons" />
       </section>
 
       <section>
@@ -804,6 +813,16 @@ function Sustainability() {
 ========================================================= */
 
 function Finance() {
+  // Randomized integer states for Finance cards
+  const chargingRevVal = useMemo(() => getRandomInt(1, 9), []);
+  const chargingRevDec = useMemo(() => getRandomInt(10, 99), []);
+  const govColVal = useMemo(() => getRandomInt(1, 9), []);
+  const govColDec = useMemo(() => getRandomInt(10, 99), []);
+  const infraSpendVal = useMemo(() => getRandomInt(1, 9), []);
+  const infraSpendDec = useMemo(() => getRandomInt(10, 99), []);
+  const roiVal = useMemo(() => getRandomInt(5, 25), []);
+  const roiDec = useMemo(() => getRandomInt(0, 9), []);
+
   return (
     <div className="space-y-7">
       <SectionTitle
@@ -815,32 +834,28 @@ function Finance() {
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           label="Charging Revenue"
-          value="₹4.82"
+          value={`₹${chargingRevVal}.${chargingRevDec}`}
           unit="Cr"
-          icon={
-            <Activity className="h-4 w-4 text-emerald-700" />
-          }
+          icon={<Activity className="h-4 w-4 text-emerald-700" />}
         />
 
         <MetricCard
           label="Government Collections"
-          value="₹2.84"
+          value={`₹${govColVal}.${govColDec}`}
           unit="Cr"
-          icon={
-            <ShieldCheck className="h-4 w-4 text-emerald-700" />
-          }
+          icon={<ShieldCheck className="h-4 w-4 text-emerald-700" />}
         />
 
         <MetricCard
           label="Infrastructure Spending"
-          value="₹3.18"
+          value={`₹${infraSpendVal}.${infraSpendDec}`}
           unit="Cr"
           icon={<BuildingIcon />}
         />
 
         <MetricCard
           label="Estimated ROI"
-          value="14.2"
+          value={`${roiVal}.${roiDec}`}
           unit="%"
           icon={<Percent className="h-4 w-4 text-emerald-700" />}
         />
@@ -866,28 +881,26 @@ function Finance() {
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             label="Applications"
-            value="8,420"
+            value={getRandomInt(5000, 15000).toLocaleString()}
             icon={<Activity className="h-4 w-4 text-emerald-700" />}
           />
 
           <MetricCard
             label="Approved"
-            value="6,184"
+            value={getRandomInt(3000, 9000).toLocaleString()}
             icon={<ShieldCheck className="h-4 w-4 text-emerald-700" />}
           />
 
           <MetricCard
             label="Amount Distributed"
-            value="₹1.42"
+            value={`₹${getRandomInt(1, 5)}.${getRandomInt(10, 99)}`}
             unit="Cr"
-            icon={
-              <Activity className="h-4 w-4 text-emerald-700" />
-            }
+            icon={<Activity className="h-4 w-4 text-emerald-700" />}
           />
 
           <MetricCard
             label="EV Adoption Impact"
-            value="+9.6"
+            value={`+${getRandomInt(5, 15)}.${getRandomInt(0, 9)}`}
             unit="%"
             icon={<TrendingUp className="h-4 w-4 text-emerald-700" />}
           />
@@ -900,40 +913,6 @@ function Finance() {
 /* =========================================================
    SMALL CONTENT COMPONENTS
 ========================================================= */
-
-function SummaryItem({
-  title,
-  value,
-  description,
-  positive,
-}: {
-  title: string;
-  value: string;
-  description: string;
-  positive?: boolean;
-}) {
-  return (
-    <div className="rounded-xl border border-emerald-500 bg-[#f0fdf4] p-4 shadow-sm">
-      <div className="flex items-center justify-between">
-        <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-950">
-          {title}
-        </span>
-
-        {positive && (
-          <TrendingUp className="h-3.5 w-3.5 text-emerald-700" />
-        )}
-      </div>
-
-      <div className="mt-3 text-lg font-black text-slate-900">
-        {value}
-      </div>
-
-      <p className="mt-1 text-[9px] font-medium leading-4 text-slate-700">
-        {description}
-      </p>
-    </div>
-  );
-}
 
 function InsightBlock({
   title,
@@ -993,8 +972,7 @@ function BuildingIcon() {
 ========================================================= */
 
 export default function AnalyticsPage() {
-  const [activeTab, setActiveTab] =
-    useState<AnalyticsTab>("overview");
+  const [activeTab, setActiveTab] = useState<AnalyticsTab>("overview");
 
   const content = useMemo(() => {
     switch (activeTab) {
@@ -1017,7 +995,7 @@ export default function AnalyticsPage() {
     <main className="min-h-screen bg-white text-slate-900">
       <div className="mx-auto max-w-[1500px] space-y-7 px-4 py-6 sm:px-6 lg:px-8">
         <header className="rounded-2xl border border-emerald-500 bg-[#f0fdf4] shadow-sm">
-          <div className="p-5">
+          <div className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-500 bg-white shadow-sm">
                 <Activity className="h-5 w-5 text-emerald-700" />
@@ -1033,18 +1011,21 @@ export default function AnalyticsPage() {
                 </p>
               </div>
             </div>
+
+            <button
+              onClick={() => window.print()}
+              className="flex items-center justify-center gap-2 rounded-xl border border-emerald-600 bg-white px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-emerald-900 shadow-sm transition hover:bg-emerald-50"
+            >
+              <Download className="h-4 w-4 text-emerald-700" />
+              Download / Print Report
+            </button>
           </div>
         </header>
 
         <section className="overflow-hidden rounded-2xl border border-emerald-500 bg-[#f0fdf4] shadow-sm">
-          <TabNav
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-          />
+          <TabNav activeTab={activeTab} setActiveTab={setActiveTab} />
 
-          <div className="bg-white p-5 sm:p-6 lg:p-7">
-            {content}
-          </div>
+          <div className="bg-white p-5 sm:p-6 lg:p-7">{content}</div>
         </section>
 
         <footer className="flex items-center justify-between border-t border-emerald-500 px-1 pt-4">
