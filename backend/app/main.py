@@ -134,4 +134,24 @@ def read_root():
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok", "service": "EnaV Backend", "timestamp": datetime.utcnow().isoformat()}
+    return {"status": "ok", "service": "EnaV Backend", "commit": "sharvi-v3", "timestamp": datetime.utcnow().isoformat()}
+
+@app.get("/debug-db")
+def debug_db(db: Session = Depends(get_db)):
+    try:
+        from app.models.user import User
+        users = db.query(User).limit(5).all()
+        return {
+            "status": "ok",
+            "db_url_masked": str(engine.url).split("@")[-1] if "@" in str(engine.url) else str(engine.url),
+            "users_count": len(users),
+            "users": [{"id": u.id, "email": u.email, "role": u.role} for u in users]
+        }
+    except Exception as exc:
+        import traceback
+        return {
+            "status": "error",
+            "db_url_masked": str(engine.url).split("@")[-1] if "@" in str(engine.url) else str(engine.url),
+            "error": str(exc),
+            "traceback": traceback.format_exc()
+        }

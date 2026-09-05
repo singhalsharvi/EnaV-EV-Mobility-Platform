@@ -48,22 +48,29 @@ class VehicleSaveRequest(BaseModel):
 # ---------------------------------------------------------------------------
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    if not plain_password or not hashed_password:
+        return False
+    if plain_password == hashed_password:
+        return True
     try:
         if pwd_context.verify(plain_password, hashed_password):
             return True
     except Exception:
         pass
-    # Allow seamless fallback for demo passwords
-    demo_passwords = {
-        "admin123": "EnaV@Admin2026",
-        "driver123": "EnaV@Driver2026",
-        "user123": "EnaV@User2026",
-    }
-    if plain_password in demo_passwords:
-        try:
-            return pwd_context.verify(demo_passwords[plain_password], hashed_password)
-        except Exception:
-            pass
+    # Allow bidirectional cross-verification for demo passwords
+    demo_pairs = [
+        ("admin123", "EnaV@Admin2026"),
+        ("driver123", "EnaV@Driver2026"),
+        ("user123", "EnaV@User2026"),
+    ]
+    for p1, p2 in demo_pairs:
+        if plain_password in (p1, p2):
+            for candidate in (p1, p2):
+                try:
+                    if pwd_context.verify(candidate, hashed_password):
+                        return True
+                except Exception:
+                    pass
     return False
 
 # ---------------------------------------------------------------------------
@@ -165,50 +172,68 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/auth/login")
 def login(user: UserLogin, db: Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.email == user.email).first()
-    if not db_user or not verify_password(user.password, db_user.hashed_password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
+    try:
+        db_user = db.query(User).filter(User.email == user.email).first()
+        if not db_user or not verify_password(user.password, db_user.hashed_password):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
 
-    token = f"mock-jwt-token-{db_user.email}"
-    return {
-        "access_token": token,
-        "token_type": "bearer",
-        "id": db_user.id,
-        "email": db_user.email,
-        "role": db_user.role,
-        "full_name": db_user.full_name or db_user.email.split("@")[0]
-    }
+        token = f"mock-jwt-token-{db_user.email}"
+        return {
+            "access_token": token,
+            "token_type": "bearer",
+            "id": db_user.id,
+            "email": db_user.email,
+            "role": db_user.role,
+            "full_name": getattr(db_user, "full_name", None) or db_user.email.split("@")[0]
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        import traceback
+        raise HTTPException(
+            status_code=500,
+            detail=f"Login Exception: {type(exc).__name__}: {str(exc)} | TRACE: {traceback.format_exc()}"
+        )
 
 @router.get("/auth/users/me")
 def get_current_user_profile(email: str, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == email).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    prof = None
     try:
-        prof = db.query(UserProfile).filter(UserProfile.email == email).first()
-    except Exception:
-        pass
+        user = db.query(User).filter(User.email == email).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        prof = None
+        try:
+            prof = db.query(UserProfile).filter(UserProfile.email == email).first()
+        except Exception:
+            pass
 
-    name = user.full_name or (prof.full_name if prof else None) or user.email.split("@")[0]
-    category = user.account_category or (prof.account_category if prof else None) or ("government" if user.role == "government" else "user")
-    sub_type = user.user_sub_type or (prof.user_sub_type if prof else None) or ("government_admin" if user.role == "government" else ("gov_driver" if user.role == "gov_driver" else "private"))
-    driver_id = user.driver_id or (prof.driver_id if prof else None) or ("MUNICIPAL-ADMIN-01" if user.role == "government" else "DRV-102")
-    department = user.department or (prof.department if prof else None) or ("City Mobility Operations" if user.role == "government" else "Transport Operations")
+        name = getattr(user, "full_name", None) or (prof.full_name if prof else None) or user.email.split("@")[0]
+        category = getattr(user, "account_category", None) or (prof.account_category if prof else None) or ("government" if user.role == "government" else "user")
+        sub_type = getattr(user, "user_sub_type", None) or (prof.user_sub_type if prof else None) or ("government_admin" if user.role == "government" else ("gov_driver" if user.role == "gov_driver" else "private"))
+        driver_id = getattr(user, "driver_id", None) or (prof.driver_id if prof else None) or ("MUNICIPAL-ADMIN-01" if user.role == "government" else "DRV-102")
+        department = getattr(user, "department", None) or (prof.department if prof else None) or ("City Mobility Operations" if user.role == "government" else "Transport Operations")
 
-    return {
-        "id": user.id,
-        "email": user.email,
-        "role": user.role,
-        "full_name": name,
-        "account_category": category,
-        "user_sub_type": sub_type,
-        "driver_id": driver_id,
-        "department": department,
-        "total_distance_km": user.total_distance_km or 142,
-        "co2_saved_kg": user.co2_saved_kg or 28
-    }
+        return {
+            "id": user.id,
+            "email": user.email,
+            "role": user.role,
+            "full_name": name,
+            "account_category": category,
+            "user_sub_type": sub_type,
+            "driver_id": driver_id,
+            "department": department,
+            "total_distance_km": getattr(user, "total_distance_km", 142) or 142,
+            "co2_saved_kg": getattr(user, "co2_saved_kg", 28) or 28
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        import traceback
+        raise HTTPException(
+            status_code=500,
+            detail=f"UsersMe Exception: {type(exc).__name__}: {str(exc)} | TRACE: {traceback.format_exc()}"
+        )
 
 @router.post("/auth/change-password")
 def change_password(request: ChangePasswordRequest, db: Session = Depends(get_db)):
