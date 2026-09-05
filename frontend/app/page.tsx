@@ -189,7 +189,8 @@ export default function HomePage() {
 
   // Fetch backend status silently on mount without showing the UI banner box
   useEffect(() => {
-    fetch("http://localhost:8000/")
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    fetch(`${apiUrl}/`)
       .then((res) => res.json())
       .then((data) => setBackendMessage(data.message))
       .catch((err) => console.error("Error connecting to backend:", err));

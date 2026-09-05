@@ -405,8 +405,9 @@ export default function InfraPlannerPage() {
         setLoading(true);
         setApiError("");
 
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
         const response = await fetch(
-          "http://127.0.0.1:8000/infra-planner/stations",
+          `${apiUrl}/infra-planner/stations`,
           {
             cache: "no-store",
           },
