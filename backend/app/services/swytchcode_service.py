@@ -10,6 +10,7 @@ import json
 import logging
 import shutil
 import subprocess
+import requests
 from typing import Dict, Any, Optional
 
 logger = logging.getLogger(__name__)
@@ -133,10 +134,47 @@ class SwytchcodeService:
             ]
         }
 
-        exec_res = self._exec_swytchcode([
-            "mistral.classification.create",
-            "--body", json.dumps(body)
-        ])
+        # Check if local Swytchcode CLI is available
+        cli_available = bool(self.cli_bin and os.path.exists(self.cli_bin))
+        mistral_key = os.getenv("MISTRAL_API_KEY")
+
+        if cli_available:
+            exec_res = self._exec_swytchcode([
+                "mistral.classification.create",
+                "--body", json.dumps(body)
+            ])
+        elif mistral_key:
+            # Cloud deployment: Direct call to Mistral Moderation API using MISTRAL_API_KEY
+            logger.info("Executing Mistral moderation via direct cloud API")
+            try:
+                resp = requests.post(
+                    "https://api.mistral.ai/v1/chat/moderations",
+                    headers={
+                        "Authorization": f"Bearer {mistral_key.strip()}",
+                        "Content-Type": "application/json"
+                    },
+                    json=body,
+                    timeout=15.0
+                )
+                if resp.status_code == 200:
+                    exec_res = {"status": "success", "data": resp.json()}
+                else:
+                    exec_res = {
+                        "status": "error",
+                        "error": f"Mistral API HTTP {resp.status_code}: {resp.text[:300]}"
+                    }
+            except Exception as req_err:
+                exec_res = {
+                    "status": "error",
+                    "error": f"Mistral cloud request failed: {str(req_err)}"
+                }
+        else:
+            exec_res = {
+                "status": "error",
+                "error": "Neither Swytchcode CLI nor MISTRAL_API_KEY environment variable is configured."
+            }
+
+        provider_name = "Swytchcode → Mistral" if cli_available else "Mistral AI (Cloud)"
 
         if exec_res.get("status") == "success":
             raw_parsed = exec_res.get("data", {})
@@ -167,7 +205,7 @@ class SwytchcodeService:
             ]
 
             return {
-                "provider": "Swytchcode → Mistral",
+                "provider": provider_name,
                 "status": "live",
                 "model": data.get("model", "mistral-moderation-latest"),
                 "classification_id": data.get("id"),
@@ -182,7 +220,7 @@ class SwytchcodeService:
 
         # Real error reporting - no silent mock data
         return {
-            "provider": "Swytchcode → Mistral",
+            "provider": provider_name,
             "status": "error",
             "error": exec_res.get("error", "Unknown Swytchcode execution error"),
             "exit_code": exec_res.get("exit_code"),
