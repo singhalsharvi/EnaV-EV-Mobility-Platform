@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 
 import 'leaflet/dist/leaflet.css';
+import { getApiBaseUrl } from "@/lib/api";
 
 
 // Dynamically import the isolated EVMap component to prevent SSR window reference issues
@@ -356,7 +357,7 @@ export default function RouteOptimizerPage() {
         setIsOptimizing(true);
         setOptimizationError(null);
 
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+        const apiUrl = getApiBaseUrl();
 
         try {
             const controller = new AbortController();

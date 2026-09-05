@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Float, DateTime, Integer
 from datetime import datetime
-from app.services.database import Base
+from app.database import Base
 
 class EmergencyVehicleModel(Base):
     __tablename__ = "emergency_vehicles"

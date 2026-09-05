@@ -19,6 +19,55 @@ export default function GovDashboard() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
 
+  const [officerProfile, setOfficerProfile] = useState({
+    full_name: "Government Officer",
+    email: "officer@enav.com",
+    driver_id: "MUNICIPAL-ADMIN-01",
+    department: "City Mobility Operations",
+    role: "government"
+  });
+
+  const handleSignOut = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userRole");
+    router.push('/auth/login');
+  };
+
+  useEffect(() => {
+    const loadOfficer = async () => {
+      try {
+        const savedEmail = localStorage.getItem("userEmail");
+        const savedName = localStorage.getItem("userName");
+        if (savedName) {
+          setOfficerProfile((prev) => ({ ...prev, full_name: savedName }));
+        }
+        if (savedEmail) {
+          setOfficerProfile((prev) => ({ ...prev, email: savedEmail }));
+          try {
+            const res = await api.get(`/auth/users/me?email=${savedEmail}`);
+            if (res.data) {
+              setOfficerProfile({
+                full_name: res.data.full_name || savedName || "Government Officer",
+                email: res.data.email || savedEmail,
+                driver_id: res.data.driver_id || "MUNICIPAL-ADMIN-01",
+                department: res.data.department || "City Mobility Operations",
+                role: res.data.role || "government"
+              });
+            }
+          } catch (e) {
+            console.log("Could not fetch officer profile me endpoint:", e);
+          }
+        }
+      } catch (e) {
+        console.error("Error loading officer profile:", e);
+      }
+    };
+    loadOfficer();
+  }, []);
+
   const [metrics, setMetrics] = useState({
     registered_evs: 4820,
     ev_stations: 142,
@@ -34,11 +83,14 @@ export default function GovDashboard() {
     const fetchDashboardData = async () => {
       // 1. Load dashboard metrics
       try {
-        const statsRes = await api.get("/gov/dashboard-stats");
+        let statsRes;
+        try {
+          statsRes = await api.get("/gov/dashboard-stats");
+        } catch {
+          statsRes = await api.get("/api/gov/dashboard-stats");
+        }
 
-        console.log("DASHBOARD RESPONSE:", statsRes.data);
-
-        if (statsRes.data?.metrics) {
+        if (statsRes?.data?.metrics) {
           setMetrics(statsRes.data.metrics);
         }
       } catch (err) {
@@ -143,37 +195,39 @@ export default function GovDashboard() {
             <div className="absolute right-0 top-12 w-80 bg-white rounded-2xl border border-emerald-200 shadow-xl p-5 z-50">
               <div className="flex items-center gap-3 pb-4 border-b border-emerald-100">
                 <div className="w-10 h-10 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold">
-                  👤
+                  {officerProfile.full_name ? officerProfile.full_name.charAt(0).toUpperCase() : '👤'}
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-slate-900">Government Officer</h3>
-                  <p className="text-xs text-emerald-800 font-medium">Government Account</p>
+                  <h3 className="font-bold text-sm text-slate-900">{officerProfile.full_name}</h3>
+                  <p className="text-xs text-emerald-800 font-medium">
+                    {officerProfile.role === 'government' ? 'Government Official' : 'Authorized Personnel'}
+                  </p>
                 </div>
               </div>
 
               <div className="py-4 space-y-3 text-xs">
                 <div>
                   <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Full Name</span>
-                  <span className="font-semibold text-slate-800">Government Officer</span>
+                  <span className="font-semibold text-slate-800">{officerProfile.full_name}</span>
                 </div>
                 <div>
                   <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Email Address</span>
-                  <span className="font-semibold text-slate-800">officer@enav.com</span>
+                  <span className="font-semibold text-slate-800">{officerProfile.email}</span>
                 </div>
                 <div>
                   <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Driver / Employee ID</span>
-                  <span className="font-semibold text-slate-800">MUNICIPAL-ADMIN-01</span>
+                  <span className="font-semibold text-slate-800">{officerProfile.driver_id}</span>
                 </div>
                 <div>
                   <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Department</span>
-                  <span className="font-semibold text-slate-800">City Mobility Operations</span>
+                  <span className="font-semibold text-slate-800">{officerProfile.department}</span>
                 </div>
               </div>
 
               <div className="pt-3 border-t border-emerald-100">
                 <button
-                  onClick={() => router.push('/auth/login')}
-                  className="w-full py-2 bg-red-50 text-red-600 rounded-xl font-semibold hover:bg-red-100 transition text-xs"
+                  onClick={handleSignOut}
+                  className="w-full py-2 bg-red-50 text-red-600 rounded-xl font-semibold hover:bg-red-100 transition text-xs cursor-pointer"
                 >
                   Sign out
                 </button>
@@ -182,8 +236,8 @@ export default function GovDashboard() {
           )}
 
           <button
-            onClick={() => router.push('/auth/login')}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 transition text-xs font-semibold text-red-600"
+            onClick={handleSignOut}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 transition text-xs font-semibold text-red-600 cursor-pointer"
           >
             <span>🚪</span> Sign Out
           </button>

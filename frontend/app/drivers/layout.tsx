@@ -47,6 +47,17 @@ export default function DriversLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [userName, setUserName] = React.useState("Driver");
+  const [userEmail, setUserEmail] = React.useState("EV-2048");
+
+  React.useEffect(() => {
+    try {
+      const savedName = localStorage.getItem("userName");
+      const savedEmail = localStorage.getItem("userEmail");
+      if (savedName) setUserName(savedName);
+      if (savedEmail) setUserEmail(savedEmail);
+    } catch (e) {}
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#020712] text-white">
@@ -77,17 +88,17 @@ export default function DriversLayout({
             href="/drivers/profile"
             className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition hover:bg-slate-900"
           >
-            <div className="hidden text-right sm:block">
-              <div className="text-[10px] font-bold text-white">
-                Driver
+            <div className="hidden text-right sm:block max-w-[150px] truncate">
+              <div className="text-[10px] font-bold text-white truncate">
+                {userName}
               </div>
 
-              <div className="text-[8px] text-slate-600">
-                EV-2048
+              <div className="text-[8px] text-slate-400 truncate">
+                {userEmail}
               </div>
             </div>
 
-            <CircleUserRound className="h-7 w-7 text-slate-500" />
+            <CircleUserRound className="h-7 w-7 text-slate-400" />
           </Link>
         </div>
       </header>

@@ -24,19 +24,29 @@ export default function LoginPage() {
       // 1. Call backend login endpoint
       const response = await api.post("/auth/login", { email, password });
 
-      // 2. Save the returned JWT access token securely
+      // 2. Save returned credentials and user info in localStorage
       localStorage.setItem("token", response.data.access_token);
+      localStorage.setItem("userEmail", email);
+      if (response.data.id) {
+        localStorage.setItem("userId", String(response.data.id));
+      }
+      if (response.data.full_name) {
+        localStorage.setItem("userName", response.data.full_name);
+      }
 
       // 3. Fetch user profile to check their actual role from database
-      // (Hum query parameter mein email bhej rahe hain jo abhi humne backend par banaya hai)
       const profileResponse = await api.get(`/auth/users/me?email=${email}`);
-      const userRole = profileResponse.data.role; // Yeh "user", "gov_driver", ya government role hoga
+      const userRole = profileResponse.data.role;
+      if (profileResponse.data.full_name) {
+        localStorage.setItem("userName", profileResponse.data.full_name);
+      }
+      if (userRole) {
+        localStorage.setItem("userRole", userRole);
+      }
 
-      // 4. Route based on the role fetched from backend
+      // 4. Route based on the verified role from backend
       if (userRole === "government" || accountCategory === "government") {
         router.push("/gov/dashboard");
-      } else if (userRole === "gov_driver" || userSubType === "gov_driver") {
-        router.push("/gov/driver-dashboard"); // Ya jo bhi driver ka route ho
       } else {
         router.push("/drivers/");
       }
@@ -277,11 +287,9 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {accountCategory === 'user' && (
-            <div className="text-center mt-6 text-xs sm:text-sm text-gray-400">
-              Don't have an account? <a href="/auth/signup" className="text-cyan-400 font-medium hover:underline">Create account</a>
-            </div>
-          )}
+          <div className="text-center mt-6 text-xs sm:text-sm text-gray-400">
+            Don't have an account? <a href="/auth/signup" className="text-cyan-400 font-medium hover:underline">Create account</a>
+          </div>
 
         </div>
       </div>

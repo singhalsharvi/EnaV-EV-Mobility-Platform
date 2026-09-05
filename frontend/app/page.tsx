@@ -28,6 +28,7 @@ import {
   MessageSquare,
   Car,
 } from "lucide-react";
+import { getApiBaseUrl } from "@/lib/api";
 
 /* =========================================================
    FEATURE SLIDES
@@ -189,7 +190,7 @@ export default function HomePage() {
 
   // Fetch backend status silently on mount without showing the UI banner box
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const apiUrl = getApiBaseUrl();
     fetch(`${apiUrl}/`)
       .then((res) => res.json())
       .then((data) => setBackendMessage(data.message))

@@ -13,6 +13,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import { getApiBaseUrl } from "@/lib/api";
 
 type Station = {
   id: string;
@@ -405,7 +406,7 @@ export default function InfraPlannerPage() {
         setLoading(true);
         setApiError("");
 
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+        const apiUrl = getApiBaseUrl();
         const response = await fetch(
           `${apiUrl}/infra-planner/stations`,
           {

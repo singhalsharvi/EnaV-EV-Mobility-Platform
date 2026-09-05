@@ -167,6 +167,12 @@ export default function DriverProfilePage() {
         PROFILE_STORAGE_KEY,
         JSON.stringify(updatedProfile)
       );
+      if (updatedProfile.name) {
+        localStorage.setItem("userName", updatedProfile.name);
+      }
+      if (updatedProfile.email) {
+        localStorage.setItem("userEmail", updatedProfile.email);
+      }
     } catch (error) {
       console.error(
         "Failed to save driver profile:",

@@ -7,9 +7,10 @@ from app.schemas.dashboard import DashboardSummaryResponse
 from app.models.vehicle import Vehicle
 from app.models.ev_station import EVStation
 
-router = APIRouter(prefix="/api/gov", tags=["Command Center"])
+router = APIRouter(tags=["Command Center"])
 
-@router.get("/dashboard/summary", response_model=DashboardSummaryResponse)
+@router.get("/api/gov/dashboard/summary", response_model=DashboardSummaryResponse)
+@router.get("/gov/dashboard/summary", response_model=DashboardSummaryResponse)
 def get_dashboard_summary(db: Session = Depends(get_db)):
     try:
         registered_evs = db.query(Vehicle).count()
@@ -26,7 +27,8 @@ def get_dashboard_summary(db: Session = Depends(get_db)):
         "lastUpdated": datetime.utcnow()
     }
 
-@router.get("/dashboard-stats")
+@router.get("/api/gov/dashboard-stats")
+@router.get("/gov/dashboard-stats")
 def get_dashboard_stats(db: Session = Depends(get_db)):
     try:
         registered_evs = db.query(Vehicle).count()
